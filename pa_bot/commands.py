@@ -538,6 +538,26 @@ def init(bot):
             await say(bot, "{0} Repetition Maximum: {1}".format(reps, result))
 
 
+    @bot.command(description="""Calculate 1-10RM that can be moved given
+                                the supplied reps and weight lifted for
+                                maximum effort.""")
+    async def maxes(reps: int,
+                    load: float,
+                    formula: str = default_formula):
+
+        try:
+            formula_class: Formula =formula_dict[formula]
+        except KeyError:
+            await say(bot, "Formula name invalid.")
+        else:
+            max = formula_class.one_rep_max(reps, load)
+            msgs = ["{0:>2}RM: {1:.2f}"
+                .format(rm, formula_class.rep_max(rm, max))
+                for rm in range(1,11)
+            ]
+            await say(bot, '\n'.join(msgs), syntax_highlight="markdown")
+
+
     @bot.command(description="Calculate Repetition Endurance Quotient.")
     async def req(reps_performed: int, reps_possible: int):
 
